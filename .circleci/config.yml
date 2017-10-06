@@ -31,14 +31,14 @@ jobs:
             TAG=$CIRCLE_SHA1
             docker build -t yoichikawasaki/railsapp:$TAG .
 
-      #- run:
-      #    name: Start container and check if it's running
-      #    command: |
-      #      # make sure you're not using `--rm` option otherwise container will be killed after finish
-      #      TAG=$CIRCLE_SHA1
-      #      docker run -d -p 8080:8080 --name railsapp yoichikawasaki/railsapp:$TAG 
-      #      sleep 10 && docker exec railsapp curl --retry 10 --retry-delay 3 http://localhost:8080
-      # 
+      - run:
+          name: Start container and check if it's running
+          command: |
+            # make sure you're not using `--rm` option otherwise container will be killed after finish
+            TAG=$CIRCLE_SHA1
+            docker run -d -p 8080:8080 --name railsapp yoichikawasaki/railsapp:$TAG 
+            sleep 10 && docker exec railsapp curl --retry 5 --retry-delay 3 http://localhost:8080
+       
       - run:
           name: Push Docker image and Update Azure Web App with the image
           command: |
