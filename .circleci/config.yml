@@ -1,0 +1,51 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.6
+    working_directory: ~/circleci-working
+
+    steps:
+      # checkout sourcecode on to working_directory
+      - checkout
+
+      # Before setup_remote_docker, all commands are executed in the primary container.
+      # - run: ...
+
+      # Once setup_remote_docker is called, a new remote environment is created,
+      # and your primary container is configured to use it. This is a way to solve 
+      # Docker-in-Docker problem described below:
+      # https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/
+      - setup_remote_docker
+
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo pip install azure-cli
+
+      # All docker-related commands are also executed in your primary container, 
+      # but building/pushing images and running containers happens in the remote Docker Engine
+      - run:
+          name: Build Docker image
+          command: |
+            TAG=$CIRCLE_SHA1
+            docker build -t yoichikawasaki/railsapp:$TAG railsapp
+
+      - run:
+          name: Start container and check if it's running
+          command: |
+            # make sure you're not using `--rm` option otherwise container will be killed after finish
+            TAG=$CIRCLE_SHA1
+            docker run -d -p 8080:8080 --name railsapp yoichikawasaki/railsapp:$TAG 
+            sleep 10 && docker exec railsapp curl --retry 10 --retry-delay 3 http://localhost:8080
+      
+      - run:
+          name: Push Docker image and Update Azure Web App with the image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              TAG=$CIRCLE_SHA1
+              docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+              docker push yoichikawasaki/railsapp:$TAG
+              az login --service-principal -u $AZURE_USER -p $AZURE_PASSWORD --tenant $AZURE_TENANT
+              az webapp config container set --name $AZURE_APP_NAME --resource-group $AZURE_RESOURCE_GROUP -c "yoichikawasaki/railsapp:$TAG"
+            fi

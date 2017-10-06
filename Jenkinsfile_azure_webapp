@@ -1,0 +1,14 @@
+node {
+  stage('init') {
+    checkout scm
+  }
+
+  stage('deploy') {
+    def resourceGroup = '<resource-group>'
+    def webAppName = '<webapp-name>'
+    def registryServer = 'yoichika.azurecr.io'
+    def imageTag = sh script: 'git describe | tr -d "\n"', returnStdout: true
+    def imageName = "$registryServer/railsapp"
+    azureWebAppPublish azureCredentialsId: 'azserviceprincipal', publishType: 'docker', resourceGroup: resourceGroup, appName: webAppName, dockerImageName: imageName, dockerImageTag: imageTag, dockerRegistryEndpoint: [credentialsId: 'acr', url: "http://$registryServer"]
+  }
+}
