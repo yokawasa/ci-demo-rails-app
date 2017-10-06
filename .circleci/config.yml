@@ -29,7 +29,7 @@ jobs:
           name: Build Docker image
           command: |
             TAG=$CIRCLE_SHA1
-            docker build -t yoichikawasaki/railsapp:$TAG railsapp
+            docker build -t yoichikawasaki/railsapp:$TAG .
 
       - run:
           name: Start container and check if it's running
