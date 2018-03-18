@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 
-#for more quick installation than normal installation include some build task
-ENV['NOKOGIRI_USE_SYSTEM_LIBRARIES'] = 'YES'
+
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.0'
