@@ -47,6 +47,7 @@ default: &default
 ```
 
 ### Preparation for dependency rails app and DB schema
+```
 bundle install 
 # create database
 bundle exec rails db:create
@@ -54,3 +55,20 @@ bundle exec rails db:create
 bundle exec rails generate scaffold article title:string text:string
 # create tables
 bundle exec rails db:migrate
+```
+
+### Docker Build
+```
+docker build -t <docker-id>/railsapp:0.0.1 .
+```
+
+### Docker run test
+```
+docker run -d \
+   -e MYSQL_USER_NAME=<mysql-user-name> \
+   -e MYSQL_USER_PASS=<mysql-user-passwd> \
+   -e MYSQL_HOST=<mysql-server-name> \ 
+   -p 8080:8080 -p 2222:2222 \
+   <docker-id>/railsapp:0.0.1
+
+```
