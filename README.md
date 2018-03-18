@@ -72,3 +72,14 @@ docker run -d \
    <docker-id>/railsapp:0.0.1
 
 ```
+
+### Push Image to Docker hub
+```
+ docker login -u <docker-id> -p <docker-passwd>
+ docker push <docker-id>/railsapp:0.0.1
+ docker logout
+```
+
+Check properly uploaded your docker image to dockerhub like below
+
+![image](https://user-images.githubusercontent.com/406525/37568627-282e4836-2b1b-11e8-843c-b0dc08ad1e86.png)
